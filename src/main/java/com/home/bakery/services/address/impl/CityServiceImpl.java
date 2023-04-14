@@ -9,7 +9,10 @@ import com.home.bakery.exceptions.BadRequestException;
 import com.home.bakery.exceptions.message.Message;
 import com.home.bakery.services.address.CityService;
 
+import lombok.Builder;
+
 @Service
+@Builder
 public class CityServiceImpl implements CityService {
 
     @Autowired

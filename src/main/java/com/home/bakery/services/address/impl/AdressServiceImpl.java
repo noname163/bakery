@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.home.bakery.data.entities.Address;
-import com.home.bakery.data.entities.City;
 import com.home.bakery.data.repositories.AddressRepository;
 import com.home.bakery.data.repositories.CityRepository;
 import com.home.bakery.data.repositories.ProvinceRepository;
