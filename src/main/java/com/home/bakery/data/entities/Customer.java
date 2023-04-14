@@ -1,5 +1,7 @@
 package com.home.bakery.data.entities;
 
+import java.util.List;
+
 import com.home.bakery.data.constans.CustomerType;
 
 import jakarta.persistence.Column;
@@ -9,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -42,4 +45,6 @@ public class Customer {
     @ManyToOne 
     @JoinColumn(name = "address_id")
     private Address address;
+    @OneToMany(mappedBy = "customer")
+    private List<Bill> bills;
 }

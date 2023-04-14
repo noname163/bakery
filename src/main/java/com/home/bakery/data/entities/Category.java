@@ -2,8 +2,6 @@ package com.home.bakery.data.entities;
 
 import java.util.List;
 
-import com.home.bakery.data.constans.UserRole;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,24 +16,20 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "Users")
+@Table(name = "Categories")
 @Entity
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
+public class Category {
     @Id
-    @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "user_sequence")
+    @SequenceGenerator(name = "category_sequence", sequenceName = "category_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "category_sequence")
     private long id;
-    @Column(name = "username", unique = true)
-    private String username;
-    @Column(name = "password", unique = false)
-    private String password;
-    @Column(name = "role", unique = false)
-    private UserRole role;
-    @OneToMany(mappedBy = "user")
-    private List<Bill> bills;
+    @Column(name = "name", unique = true)
+    private String name;
+    @OneToMany(mappedBy = "category")
+    private List<Product> products;
 }
