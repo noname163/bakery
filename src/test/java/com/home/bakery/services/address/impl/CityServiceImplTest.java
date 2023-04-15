@@ -31,6 +31,6 @@ public class CityServiceImplTest {
         when(message.objectExistMessage("City", "test")).thenReturn("City name test already exist.");
         BadRequestException actual = Assertions.assertThrows(BadRequestException.class,()-> cityServiceImpl.addCity("test"));
 
-        assertThat(actual.getMessage(), is("ity name test already exist."));
+        assertThat(actual.getMessage(), is("City name test already exist."));
     }
 }
