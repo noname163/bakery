@@ -25,6 +25,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Build with Maven
+      if: ${{ job.status == 'success' }}
       run: mvn -B package --file pom.xml
     - name: Run test
       if: ${{ job.status == 'success' }}
