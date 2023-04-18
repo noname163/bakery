@@ -7,13 +7,15 @@ import com.home.bakery.data.entities.State;
 import com.home.bakery.data.repositories.StateRepository;
 import com.home.bakery.exceptions.BadRequestException;
 import com.home.bakery.exceptions.message.Message;
+import com.home.bakery.services.address.StateService;
 
 @Service
-public class StateServiceImpl {
+public class StateServiceImpl implements StateService {
     @Autowired
     private StateRepository stateRepository;
     @Autowired
     private Message message;
+
     public void addState(String name){
         if(stateRepository.existsByName(name)){
             throw new BadRequestException(message.objectExistMessage("State", name));

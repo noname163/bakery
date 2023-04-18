@@ -1,46 +1,38 @@
 package com.home.bakery.data.entities;
 
-import java.util.List;
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "Adresses")
+@Table(name = "Bill_Details")
 @Entity
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address {
+public class BillDetail {
     @Id
-    @SequenceGenerator(name = "address_sequence", sequenceName = "address_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "address_sequence")
+    @SequenceGenerator(name = "bill_detail_sequence", sequenceName = "bill_detail_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "bill_detail_sequence")
     private long id;
-
+    @Column(name = "quantity", unique = false)
+    private Integer quantity;
     @ManyToOne
-    @JoinColumn(name = "province_id")
-    private Province province;
+    @JoinColumn(name = "product_id")
+    private Product product;
     @ManyToOne
-    @JoinColumn(name = "state_id")
-    private State state;
-    @ManyToOne 
-    @JoinColumn(name = "city_id")
-    private City city;
-    @OneToMany(mappedBy = "address")
-    private List<Customer> customers;
-
+    @JoinColumn(name = "bill_id")
+    private Bill bill;
 }

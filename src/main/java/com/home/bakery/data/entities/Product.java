@@ -4,14 +4,16 @@ import java.util.List;
 
 import com.home.bakery.data.constans.ProductStatus;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,8 +32,13 @@ public class Product {
     @SequenceGenerator(name = "product_sequence", sequenceName = "product_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "product_sequence")
     private long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "image")
+    private String image;
+    @Column(name = "expired_date")
     private Integer expiredDate;
+    @Column(name = "status")
     private ProductStatus status;
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -39,4 +46,6 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "price_id")
     private Price price;
+    @OneToMany(mappedBy = "product")
+    private List<BillDetail> billDetails;
 }

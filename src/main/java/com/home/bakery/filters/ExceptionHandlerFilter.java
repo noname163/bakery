@@ -2,6 +2,8 @@ package com.home.bakery.filters;
 
 import java.io.IOException;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -16,13 +18,13 @@ import com.home.bakery.exceptions.NotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.extern.slf4j.Slf4j;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.FilterChain;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Slf4j
 @Component
-
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     @Override
@@ -41,6 +43,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
                 httpStatus = HttpStatus.FORBIDDEN;
             }
             setErrorResponse(httpStatus, response, ex);
+            log.debug("ExceptionHandlerFilter called");
+            
         }
     }
 
@@ -51,6 +55,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             String json = convertObjectToJson(exceptionResponse.getMessage());
             response.getWriter().write(json);
+            log.debug("Setting error response with status " + status.value() + " and message " + exceptionResponse.getMessage());
         } catch (IOException e) {
             log.info(e.getMessage());
         }

@@ -10,18 +10,17 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.home.bakery.data.constans.UserRole;
 import com.home.bakery.data.entities.User;
 
-import lombok.Builder;
-import lombok.Getter;
-
-@Getter
-@Builder
-public class CustomUserDetails implements UserDetails {
+public class CustomUserDetails extends User implements UserDetails {
 
     private static final long serialVersionUID = 1L;
     private String username;
     private String password;
     private UserRole role;
     private final transient User user;
+
+    public CustomUserDetails(User user) {
+        this.user = user;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -58,13 +57,6 @@ public class CustomUserDetails implements UserDetails {
         return true;
     }
 
-    public static CustomUserDetails build(User user) {
-        return CustomUserDetails.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .role(user.getRole())
-                .build();
-    }
 
     public User getUser() {
         return this.user;

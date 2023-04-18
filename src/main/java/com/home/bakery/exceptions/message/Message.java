@@ -10,5 +10,8 @@ public class Message {
     public String objectNotFoundByIdMessage(String objectName, Long value){
         return objectName+" id " + value + " not found.";
     }
+    public String badValue(String objectName){
+        return "The " + objectName + " not valid";
+    }
 
 }
