@@ -23,19 +23,19 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    @Bean
-    public FilterRegistrationBean<ExceptionHandlerFilter> myFilterRegistrationBean() {
-        FilterRegistrationBean<ExceptionHandlerFilter> registrationBean = new FilterRegistrationBean<>();
-        registrationBean.setFilter(new ExceptionHandlerFilter());
-        registrationBean.addUrlPatterns("/*");
-        registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
-        return registrationBean;
-    }
+    // @Bean
+    // public FilterRegistrationBean<ExceptionHandlerFilter> myFilterRegistrationBean() {
+    //     FilterRegistrationBean<ExceptionHandlerFilter> registrationBean = new FilterRegistrationBean<>();
+    //     registrationBean.setFilter(new ExceptionHandlerFilter());
+    //     registrationBean.addUrlPatterns("/*");
+    //     registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE);
+    //     return registrationBean;
+    // }
 
-    @Bean
-    public ExceptionHandlerFilter exceptionHandlerFilter() {
-        return new ExceptionHandlerFilter();
-    }
+    // @Bean
+    // public ExceptionHandlerFilter exceptionHandlerFilter() {
+    //     return new ExceptionHandlerFilter();
+    // }
 
     @Bean
     @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
