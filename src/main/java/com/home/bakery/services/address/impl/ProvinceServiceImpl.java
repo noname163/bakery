@@ -7,17 +7,21 @@ import com.home.bakery.data.entities.Province;
 import com.home.bakery.data.repositories.ProvinceRepository;
 import com.home.bakery.exceptions.BadRequestException;
 import com.home.bakery.exceptions.message.Message;
+import com.home.bakery.services.address.ProvinceService;
 
 @Service
-public class ProvinceServiceImpl {
+public class ProvinceServiceImpl implements ProvinceService {
     @Autowired
     private ProvinceRepository provinceRepository;
     @Autowired
     private Message message;
-    public void addProvince(String name){
-        if(provinceRepository.existsByName(name)){
-            throw new BadRequestException(message.objectExistMessage("Province", name));
+    @Override
+    public void addProvince(String province) {
+        if(provinceRepository.existsByName(province)){
+            throw new BadRequestException(message.objectExistMessage("Province", province));
         }
-        provinceRepository.save(Province.builder().name(name).build());
+        provinceRepository.save(Province.builder().name(province).build());
     }
+    
+    
 }

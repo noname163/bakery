@@ -20,6 +20,8 @@ public class CustomerMapper {
     }
 
     public List<Customer> mapDtoToEntity(List<CustomerRequest> customerRequests){
-        return customerRequests.stream().map(this::mapDtoToEntity).collect(Collectors.toList());
+        return customerRequests.stream()
+        .map(this::mapDtoToEntity)
+        .collect(Collectors.toList());
     }
 }
