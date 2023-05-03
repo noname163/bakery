@@ -16,4 +16,5 @@ public class CustomerRequest {
     private Long stateId;
     private Long provinceId;
     private Long cityId;
+    private Long districtId;
 }

@@ -9,5 +9,7 @@ import com.home.bakery.data.entities.Address;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Long> {
-    public Optional<Address> findByStateIdAndProvinceIdAndCityId(Long stateId, Long provinceId, Long cityId);
+    public Optional<Address> findByStateIdAndProvinceIdAndCityId(Long stateId,
+            Long provinceId,
+            Long cityId);
 }

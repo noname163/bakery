@@ -34,7 +34,7 @@ public class AddressController {
     })
     @PostMapping()
     public ResponseEntity<Void> createAddress(@RequestBody AddressRequest addressRequest){
-        addressService.CreateAddress(addressRequest);
+        addressService.createAddress(addressRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

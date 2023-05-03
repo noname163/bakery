@@ -2,6 +2,7 @@ package com.home.bakery.data.entities;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,32 +19,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "Adresses")
+@Table(name = "Districts")
 @Entity
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address {
+public class District {
     @Id
-    @SequenceGenerator(name = "address_sequence", sequenceName = "address_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "address_sequence")
+    @SequenceGenerator(name = "district_sequence", sequenceName = "district_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "district_sequence")
     private long id;
-
+    @Column(name = "district")
+    private String name;
     @ManyToOne
     @JoinColumn(name = "province_id")
     private Province province;
-    @ManyToOne
-    @JoinColumn(name = "state_id", unique = true)
-    private State state;
-    @ManyToOne 
-    @JoinColumn(name = "city_id")
-    private City city;
-    @ManyToOne 
-    @JoinColumn(name = "district_id")
-    private District district;
-    @OneToMany(mappedBy = "address")
-    private List<Customer> customers;
-
+    @OneToMany(mappedBy = "district")
+    private List<Address> addresses;
 }
