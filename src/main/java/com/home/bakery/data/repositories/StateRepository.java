@@ -10,5 +10,5 @@ import com.home.bakery.data.entities.State;
 @Repository
 public interface StateRepository extends JpaRepository<State, Long> {
     Boolean existsByName(String name);
-    public Optional<State> findByAddress(Long addressId);
+    public Optional<State> findByAddresses(Long addressId);
 }
