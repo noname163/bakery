@@ -10,5 +10,5 @@ import com.home.bakery.data.entities.Province;
 @Repository
 public interface ProvinceRepository extends JpaRepository<Province, Long>{
     Boolean existsByName(String name);
-    public Optional<Province> findByAddressId(Long addressId);
+    public Optional<Province> findByAddress(Long addressId);
 }

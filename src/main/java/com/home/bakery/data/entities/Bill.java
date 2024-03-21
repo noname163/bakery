@@ -36,9 +36,6 @@ public class Bill {
     @ManyToOne
     @JoinColumn(name = "driver_id")
     private User user;
-    @ManyToOne
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
     @Column(name = "created_date")
     private LocalDate createdDate;
     @Column(name = "paid_date")
