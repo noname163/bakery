@@ -10,6 +10,7 @@ import com.home.bakery.data.repositories.AddressRepository;
 import com.home.bakery.data.repositories.UserDetailRepository;
 import com.home.bakery.data.repositories.UserRepository;
 import com.home.bakery.exceptions.NotFoundException;
+import com.home.bakery.exceptions.message.Message;
 import com.home.bakery.mappers.usermapper.UserDetailMapper;
 import com.home.bakery.services.userDetail.UserDetailService;
 
@@ -21,15 +22,16 @@ public class UserDetailServiceImpl implements UserDetailService {
     private UserDetailRepository userDetailRepository;
     private UserRepository userRepository;
     private AddressRepository addressRepository;
+    private Message message;
 
     @Override
     public void createUserDetail(UserDetailRequest userDetailRequest) {
         UserDetail userDetail = userDetailMapper.mapUserDetailRequestToUserDetail(userDetailRequest);
         Address address = addressRepository.findById(userDetailRequest.getAddressId()).orElseThrow(
-                () -> new NotFoundException("Cannot found address with id " + userDetailRequest.getAddressId()));
+                () -> new NotFoundException(message.notFoundObjectMessage("Adrress", userDetailRequest.getAddressId())));
         if (!userDetailRequest.getEmail().isEmpty()) {
             userDetail.setUser(userRepository.findByEmail(userDetailRequest.getEmail())
-                    .orElseThrow(() -> new NotFoundException("Can not found user with email")));
+                    .orElseThrow(() -> new NotFoundException(message.notFoundObjectMessage("User", userDetailRequest.getEmail()))));
         }
         userDetail.setAddress(address);
         userDetailRepository.save(userDetail);

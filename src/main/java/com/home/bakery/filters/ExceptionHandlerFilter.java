@@ -51,7 +51,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
     public void setErrorResponse(HttpStatus status, HttpServletResponse response, Throwable ex) {
         response.setStatus(status.value());
         response.setContentType("application/json");
-        ExceptionResponse exceptionResponse = ExceptionResponse.builder().message(ex.getCause().getMessage()).build();
+        ExceptionResponse exceptionResponse = ExceptionResponse.builder().message(ex.getMessage()).build();
         try {
             String json = convertObjectToJson(exceptionResponse.getMessage());
             response.getWriter().write(json);
