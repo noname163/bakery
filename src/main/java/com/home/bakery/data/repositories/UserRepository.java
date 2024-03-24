@@ -8,4 +8,6 @@ import com.home.bakery.data.entities.User;
 
 public interface UserRepository extends JpaRepository<User, Long> {
     public Optional<User> findByUsername(String name);
+    
+    public Optional<User> findByEmail(String name);  
 }
