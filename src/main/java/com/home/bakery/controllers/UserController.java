@@ -30,11 +30,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RequestMapping("api/users")
 public class UserController {
 
-    @Autowired
     private UserService userService;
     private UserDetailService userDetailService;
     
-    @Operation(summary = "Create new user")
+    @Autowired    
+    public UserController(UserService userService, UserDetailService userDetailService) {
+        this.userService = userService;
+        this.userDetailService = userDetailService;
+}
+
+@Operation(summary = "Create new user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Create user successfully.", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = UserRequest.class))}),

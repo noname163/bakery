@@ -1,5 +1,7 @@
 package com.home.bakery.services.authen.impl;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,17 +22,24 @@ import com.home.bakery.exceptions.message.Message;
 import com.home.bakery.services.authen.SecurityContextService;
 import com.home.bakery.utils.JwtTokenUtil;
 
-import java.util.Optional;
-
 @Service
 public class SecurityContextServiceImpl implements SecurityContextService {
 
-    @Autowired
     private SecurityContext securityContext;
     private UserRepository userRepository;
     private JwtTokenUtil jwtTokenUtil;
     private Message message;
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public SecurityContextServiceImpl(SecurityContext securityContext, UserRepository userRepository,
+            JwtTokenUtil jwtTokenUtil, Message message, PasswordEncoder passwordEncoder) {
+        this.securityContext = securityContext;
+        this.userRepository = userRepository;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.message = message;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void setSecurityContext(String email) {

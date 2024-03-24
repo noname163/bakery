@@ -18,6 +18,15 @@ import com.home.bakery.services.userDetail.UserDetailService;
 public class UserDetailServiceImpl implements UserDetailService {
 
     @Autowired
+    public UserDetailServiceImpl(UserDetailMapper userDetailMapper, UserDetailRepository userDetailRepository,
+            UserRepository userRepository, AddressRepository addressRepository, Message message) {
+        this.userDetailMapper = userDetailMapper;
+        this.userDetailRepository = userDetailRepository;
+        this.userRepository = userRepository;
+        this.addressRepository = addressRepository;
+        this.message = message;
+    }
+
     private UserDetailMapper userDetailMapper;
     private UserDetailRepository userDetailRepository;
     private UserRepository userRepository;
@@ -28,10 +37,12 @@ public class UserDetailServiceImpl implements UserDetailService {
     public void createUserDetail(UserDetailRequest userDetailRequest) {
         UserDetail userDetail = userDetailMapper.mapUserDetailRequestToUserDetail(userDetailRequest);
         Address address = addressRepository.findById(userDetailRequest.getAddressId()).orElseThrow(
-                () -> new NotFoundException(message.notFoundObjectMessage("Adrress", userDetailRequest.getAddressId())));
+                () -> new NotFoundException(
+                        message.notFoundObjectMessage("Adrress", userDetailRequest.getAddressId())));
         if (!userDetailRequest.getEmail().isEmpty()) {
             userDetail.setUser(userRepository.findByEmail(userDetailRequest.getEmail())
-                    .orElseThrow(() -> new NotFoundException(message.notFoundObjectMessage("User", userDetailRequest.getEmail()))));
+                    .orElseThrow(() -> new NotFoundException(
+                            message.notFoundObjectMessage("User", userDetailRequest.getEmail()))));
         }
         userDetail.setAddress(address);
         userDetailRepository.save(userDetail);

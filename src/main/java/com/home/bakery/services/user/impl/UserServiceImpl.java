@@ -18,7 +18,15 @@ import com.home.bakery.services.user.UserService;
 public class UserServiceImpl implements UserService {
 
     @Autowired
+    public UserServiceImpl(UserMapper userMapper, UserRepository userRepository, PasswordEncoder passwordEncoder,
+    Message message) {
+        this.userMapper = userMapper;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.message = message;
+    }
     private UserMapper userMapper;
+
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
     private Message message;
