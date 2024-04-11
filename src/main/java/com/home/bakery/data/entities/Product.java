@@ -43,10 +43,8 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    @Column(name = "wholesale_price")
-    private Double wholesalePrice;
-    @Column(name = "retail_price")
-    private Double retailPrice;
+    @Column(name = "price")
+    private Double price;
     @OneToMany(mappedBy = "product")
     private List<BillDetail> billDetails;
 }
