@@ -40,6 +40,9 @@ public class Bill {
     private LocalDate createdDate;
     @Column(name = "paid_date")
     private LocalDate paidDate;
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private UserDetail userDetail;
     @Column(name = "status")
     private BillStatus status;
     @OneToMany(mappedBy = "bill")

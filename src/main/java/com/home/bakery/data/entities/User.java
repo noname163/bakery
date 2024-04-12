@@ -1,25 +1,27 @@
 package com.home.bakery.data.entities;
 
+import java.time.LocalDate;
 import java.util.List;
-
-import com.home.bakery.data.constans.CustomerType;
-import com.home.bakery.data.constans.UserRole;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+
+import com.home.bakery.data.constans.OtpStatus;
+import com.home.bakery.data.constans.UserRole;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Builder.Default;
 
 @Table(name = "Users")
 @Entity
@@ -35,21 +37,26 @@ public class User {
     private long id;
     @Column(name = "username", unique = true)
     private String username;
+    @Column(name = "email", unique = true)
+    private String email;
     @Column(name = "password", unique = false)
     private String password;
+    @Column(name = "otp", unique = false)
+    private String otp;
+    @Column(name = "otp_status", unique = false)
+    private OtpStatus otpStatus;
     @Column(name = "role", unique = false)
     private UserRole role;
-    @Column(name = "commission_rate", unique = false)
-    private float commissionRate;
-    @Column(name = "phone", unique = true)
-    private String phone;
-    @Column(name = "shop_name", unique = false)
-    private String shopName;
-    @Column(name = "address", unique = false)
-    private String addressDetail;
-    @ManyToOne 
-    @JoinColumn(name = "address_id")
-    private Address address;
+    @Column(name = "status")
+    private boolean status;
+    @Column(name = "created_date")
+    @Default
+    private LocalDate createdDate = LocalDate.now();
+    @Column(name = "updated_date")
+    @Default
+    private LocalDate updatedDate = LocalDate.now();
+    @OneToOne
+    private UserDetail userDetail;
     @OneToMany(mappedBy = "user")
     private List<Bill> bills;
 }

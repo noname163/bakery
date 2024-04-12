@@ -1,5 +1,6 @@
 package com.home.bakery.data.entities;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.home.bakery.data.constans.ProductStatus;
@@ -16,6 +17,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

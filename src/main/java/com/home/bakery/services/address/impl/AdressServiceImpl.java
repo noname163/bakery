@@ -21,7 +21,7 @@ import com.home.bakery.exceptions.message.Message;
 import com.home.bakery.services.address.AddressService;
 
 @Service
-public class AdressServiceImpl implements AddressService{
+public class AdressServiceImpl implements AddressService {
     @Autowired
     private AddressRepository addressRepository;
     @Autowired
@@ -34,32 +34,33 @@ public class AdressServiceImpl implements AddressService{
     private DistrictRepository districtRepository;
     @Autowired
     private Message message;
+
     @Override
     public void createAddress(AddressRequest addressRequest) {
         Optional<City> cityOtp = cityRepository.findById(addressRequest.getCityId());
 
-        if(cityOtp.isEmpty()){
+        if (cityOtp.isEmpty()) {
             throw new NotFoundException(message.objectNotFoundByIdMessage("Province", addressRequest.getProvinceId()));
         }
         Optional<Province> provinceOtp = provinceRepository.findById(addressRequest.getProvinceId());
-        if(provinceOtp.isEmpty()){
+        if (provinceOtp.isEmpty()) {
             throw new NotFoundException(message.objectNotFoundByIdMessage("City", addressRequest.getCityId()));
         }
         Optional<State> stateOtp = stateRepository.findById(addressRequest.getStateId());
-        if(stateOtp.isEmpty()){
+        if (stateOtp.isEmpty()) {
             throw new NotFoundException(message.objectNotFoundByIdMessage("State", addressRequest.getStateId()));
         }
         Optional<District> districtOtp = districtRepository.findById(addressRequest.getDistrictId());
-        if(districtOtp.isEmpty()){
+        if (districtOtp.isEmpty()) {
             throw new NotFoundException(message.objectNotFoundByIdMessage("District", addressRequest.getDistrictId()));
         }
 
         addressRepository.save(Address.builder()
-        .city(cityOtp.get())
-        .province(provinceOtp.get())
-        .state(stateOtp.get())
-        .district(districtOtp.get())
-        .build());
+                .city(cityOtp.get())
+                .province(provinceOtp.get())
+                .state(stateOtp.get())
+                .district(districtOtp.get())
+                .build());
     }
-    
+
 }
