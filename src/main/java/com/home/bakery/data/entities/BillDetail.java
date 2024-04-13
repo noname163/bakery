@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,4 +39,7 @@ public class BillDetail {
     @ManyToOne
     @JoinColumn(name = "bill_id")
     private Bill bill;
+
+    @Transient
+    private Long productId;
 }
