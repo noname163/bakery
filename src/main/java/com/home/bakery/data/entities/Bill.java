@@ -38,6 +38,8 @@ public class Bill {
     private User user;
     @Column(name = "created_date")
     private LocalDate createdDate;
+    @Column(name = "delivery_date")
+    private LocalDate deliveryDate;
     @Column(name = "paid_date")
     private LocalDate paidDate;
     @ManyToOne

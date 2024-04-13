@@ -29,6 +29,8 @@ public class BillDetail {
     private long id;
     @Column(name = "quantity", unique = false)
     private Integer quantity;
+    @Column(name = "exchange_quantity")
+    private Integer exchangeQuantity;
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
