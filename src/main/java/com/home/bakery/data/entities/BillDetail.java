@@ -1,5 +1,7 @@
 package com.home.bakery.data.entities;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -39,6 +41,11 @@ public class BillDetail {
     @ManyToOne
     @JoinColumn(name = "bill_id")
     private Bill bill;
+    @Column(name = "created_date")
+    private LocalDate createdDate;
+    @Column(name = "updated_date")
+    private LocalDate updatedDate;
+
 
     @Transient
     private Long productId;

@@ -51,7 +51,6 @@ public class BillDetailServiceImpl implements BillDetailService {
         for (BillDetail billDetail : billDetails) {
             Product product = products.get(billDetail.getProductId());
             billDetail.setProduct(product);
-            ;
         }
 
         billDetailRepository.saveAll(billDetails);
