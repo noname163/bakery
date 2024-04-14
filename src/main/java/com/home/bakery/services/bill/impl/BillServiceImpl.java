@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.home.bakery.data.constans.BillStatus;
 import com.home.bakery.data.dto.request.BillDetailRequest;
@@ -19,7 +20,9 @@ import com.home.bakery.data.repositories.BillRepository;
 import com.home.bakery.data.repositories.UserDetailRepository;
 import com.home.bakery.mappers.BillMapper;
 import com.home.bakery.services.bill.BillService;
+import com.home.bakery.services.billdetail.BillDetailService;
 
+@Service
 public class BillServiceImpl implements BillService {
     @Autowired
     private BillRepository billRepository;
@@ -27,6 +30,8 @@ public class BillServiceImpl implements BillService {
     private UserDetailRepository userDetailRepository;
     @Autowired
     private BillMapper billMapper;
+    @Autowired
+    private BillDetailService billDetailService;
 
     @Override
     public List<BillResponse> createBills(List<BillRequest> billRequests) {
@@ -58,6 +63,8 @@ public class BillServiceImpl implements BillService {
                 billDetailRequest.put(savedBills.get(i), billRequests.get(i).getBillDetailRequests());
             }
         }
+
+        billDetailService.createBillDetails(billDetailRequest);
 
         return billMapper.mapBillsToBillResponses(savedBills);
     }

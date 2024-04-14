@@ -30,55 +30,54 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 @RequestMapping("api/users")
 public class UserController {
 
-    private UserService userService;
-    private UserDetailService userDetailService;
-    
-    @Autowired    
-    public UserController(UserService userService, UserDetailService userDetailService) {
-        this.userService = userService;
-        this.userDetailService = userDetailService;
-}
+        private UserService userService;
+        private UserDetailService userDetailService;
 
-@Operation(summary = "Create new user")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Create user successfully.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserRequest.class))}),
-            @ApiResponse(responseCode = "400", description = "Data not valid", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class))})
-    })
-    @PostMapping()
-    public ResponseEntity<Void> createNewUser(@Valid @RequestBody UserRequest userRequest){
-        userService.createUser(userRequest, UserRole.CUSTOMER);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
+        @Autowired
+        public UserController(UserService userService, UserDetailService userDetailService) {
+                this.userService = userService;
+                this.userDetailService = userDetailService;
+        }
 
-    @Operation(summary = "Create new driver")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Create driver successfully.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserRequest.class))}),
-            @ApiResponse(responseCode = "400", description = "Data not valid", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class))})
-    })
-    @PostMapping("/driver")
-    @PreAuthorize("hasAuthority('OWNER')")
-    public ResponseEntity<Void> createNewDriver(@Valid @RequestBody UserRequest userRequest){
-        userService.createUser(userRequest, UserRole.DRIVER);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
+        @Operation(summary = "Create new user")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "201", description = "Create user successfully.", content = {
+                                        @Content(mediaType = "application/json", schema = @Schema(implementation = UserRequest.class)) }),
+                        @ApiResponse(responseCode = "400", description = "Data not valid", content = {
+                                        @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class)) })
+        })
+        @PostMapping()
+        public ResponseEntity<Void> createNewUser(@Valid @RequestBody UserRequest userRequest) {
+                userService.createUser(userRequest, UserRole.CUSTOMER);
+                return ResponseEntity.status(HttpStatus.OK).build();
+        }
 
-    @Operation(summary = "Create user detail")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Create user detail successfully.", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = UserRequest.class))}),
-            @ApiResponse(responseCode = "400", description = "Data not valid", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class))})
-    })
-    @PostMapping("/detail")
-    @PreAuthorize("hasAnyAuthority('OWNER','CUSTOMER')")
-    public ResponseEntity<Void> createUserDetail(@Valid @RequestBody UserDetailRequest userDetailRequest){
-        userDetailService.createUserDetail(userDetailRequest);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
+        @Operation(summary = "Create new driver")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "201", description = "Create driver successfully.", content = {
+                                        @Content(mediaType = "application/json", schema = @Schema(implementation = UserRequest.class)) }),
+                        @ApiResponse(responseCode = "400", description = "Data not valid", content = {
+                                        @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class)) })
+        })
+        @PostMapping("/driver")
+        @PreAuthorize("hasAuthority('OWNER')")
+        public ResponseEntity<Void> createNewDriver(@Valid @RequestBody UserRequest userRequest) {
+                userService.createUser(userRequest, UserRole.DRIVER);
+                return ResponseEntity.status(HttpStatus.OK).build();
+        }
 
+        @Operation(summary = "Create user detail")
+        @ApiResponses(value = {
+                        @ApiResponse(responseCode = "201", description = "Create user detail successfully.", content = {
+                                        @Content(mediaType = "application/json", schema = @Schema(implementation = UserRequest.class)) }),
+                        @ApiResponse(responseCode = "400", description = "Data not valid", content = {
+                                        @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class)) })
+        })
+        @PostMapping("/detail")
+        @PreAuthorize("hasAnyAuthority('OWNER','CUSTOMER')")
+        public ResponseEntity<Void> createUserDetail(@Valid @RequestBody UserDetailRequest userDetailRequest) {
+                userDetailService.createUserDetail(userDetailRequest);
+                return ResponseEntity.status(HttpStatus.OK).build();
+        }
 
 }
