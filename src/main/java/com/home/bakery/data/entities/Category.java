@@ -30,6 +30,8 @@ public class Category {
     private long id;
     @Column(name = "name", unique = true)
     private String name;
+    @Column(name = "description")
+    private String description;
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 }

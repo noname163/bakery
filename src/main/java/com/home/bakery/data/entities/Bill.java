@@ -7,6 +7,7 @@ import com.home.bakery.data.constans.BillStatus;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,9 +39,11 @@ public class Bill {
     private User user;
     @Column(name = "created_date")
     private LocalDate createdDate;
+    @Column(name = "delivery_date")
+    private LocalDate deliveryDate;
     @Column(name = "paid_date")
     private LocalDate paidDate;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "customer_id")
     private UserDetail userDetail;
     @Column(name = "status")

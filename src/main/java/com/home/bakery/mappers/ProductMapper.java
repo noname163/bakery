@@ -19,6 +19,8 @@ public class ProductMapper {
                 .name((product.getName()))
                 .image(product.getImage())
                 .price(product.getPrice())
+                .category(product.getCategory().getName())
+                .status(product.getStatus())
                 .expiredDate(product.getExpiredDate())
                 .build();
     }
