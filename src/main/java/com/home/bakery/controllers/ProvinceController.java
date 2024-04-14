@@ -3,6 +3,7 @@ package com.home.bakery.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,7 @@ public class ProvinceController {
             @ApiResponse(responseCode = "400", description = "Psrovince was exist", content = {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class))})
     })
+    @PostMapping
     public ResponseEntity<Void> createProvince(String povince){
         provinceService.addProvince(povince);
         return ResponseEntity.status(HttpStatus.CREATED).build();

@@ -47,12 +47,6 @@ public class Product {
     private Category category;
     @Column(name = "price")
     private Double price;
-    @Column(name = "created_date")
-    @Default
-    private LocalDate createdDate = LocalDate.now();
-    @Column(name = "updated_date")
-    @Default
-    private LocalDate updatedDate = LocalDate.now();
     @OneToMany(mappedBy = "product")
     private List<BillDetail> billDetails;
 }
