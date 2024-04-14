@@ -69,7 +69,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public PaginationResponse<List<ProductResponse>> getProducts(Integer page, Integer size, String field,
             SortType sortType) {
-        Pageable pageable = pageableUtil.getPageable(page, size, field, sortType.toString());
+        Pageable pageable = pageableUtil.getPageable(page, size, field, sortType);
 
         Page<Product> data = productRepository.findAll(pageable);
 

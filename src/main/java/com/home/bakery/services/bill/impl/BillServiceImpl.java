@@ -1,10 +1,13 @@
 package com.home.bakery.services.bill.impl;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +37,7 @@ public class BillServiceImpl implements BillService {
     private BillDetailService billDetailService;
 
     @Override
+    @Transactional
     public List<BillResponse> createBills(List<BillRequest> billRequests) {
         Set<Long> customerIds = billRequests.stream()
                 .map(BillRequest::getCustomerId)
@@ -45,7 +49,7 @@ public class BillServiceImpl implements BillService {
 
         userDetails
                 .forEach(user -> billsMap.computeIfAbsent(user.getId(),
-                        id -> Bill.builder().userDetail(user).status(BillStatus.CREATED).build()));
+                        id -> Bill.builder().userDetail(user).createdDate(LocalDate.now()).status(BillStatus.CREATED).build()));
 
         billRequests.forEach(billRequest -> {
             Bill bill = billsMap.get(billRequest.getCustomerId());
