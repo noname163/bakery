@@ -48,6 +48,8 @@ public class Bill {
     private UserDetail userDetail;
     @Column(name = "status")
     private BillStatus status;
+    @Column(name = "total")
+    private Long money;
     @OneToMany(mappedBy = "bill")
     private List<BillDetail> billDetails;
 }

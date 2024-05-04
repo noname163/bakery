@@ -12,9 +12,11 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BillResponse {
+    private long id;
     private String customerName;
     private Long money;
     private BillStatus status;
     private LocalDate deliveryDate;
     private String address;
+    private String driverName;
 }
