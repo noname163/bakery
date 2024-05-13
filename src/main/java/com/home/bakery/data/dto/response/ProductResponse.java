@@ -2,6 +2,7 @@ package com.home.bakery.data.dto.response;
 
 import org.springframework.data.elasticsearch.annotations.Document;
 
+import com.home.bakery.data.constans.ElasticIndex;
 import com.home.bakery.data.constans.ProductStatus;
 
 import lombok.Builder;
@@ -11,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@Document(indexName = "productindex")
+@Document(indexName = "product_index")
 public class ProductResponse {
     private long id;
     private String name;

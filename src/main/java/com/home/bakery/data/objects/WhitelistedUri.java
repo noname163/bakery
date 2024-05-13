@@ -16,7 +16,7 @@ public class WhitelistedUri {
     public boolean matches(HttpServletRequest request) {
         boolean uriMatches = request.getRequestURI().startsWith(uri);
         boolean uriAdmin = request.getRequestURI().contains("admin");
-        boolean methodMatches = httpMethod == null || request.getMethod().equals(httpMethod);
+        boolean methodMatches = httpMethod == null || request.getMethod().equals(httpMethod) || httpMethod.equals("ALL");
         return uriMatches && methodMatches && !uriAdmin;
     }
 

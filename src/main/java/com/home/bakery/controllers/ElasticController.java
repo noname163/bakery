@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,6 +28,19 @@ public class ElasticController {
     @Autowired
     private ElasticSearchService elasticSearchService;
 
+    @Operation(summary = "Bulk all product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Bulk successfully.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = PaginationResponse.class))
+            }),
+            @ApiResponse(responseCode = "400", description = "Bad request.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class)) })
+    })
+    @PostMapping()
+    public ResponseEntity<Void> bulkProductDataByIndex() throws ElasticsearchException, IOException{
+        elasticSearchService.bulkProductsData();
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
     @Operation(summary = "Clear data by index")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Delete successfully.", content = {

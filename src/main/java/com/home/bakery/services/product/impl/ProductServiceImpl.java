@@ -19,6 +19,7 @@ import com.home.bakery.data.repositories.ProductRepository;
 import com.home.bakery.exceptions.NotFoundException;
 import com.home.bakery.exceptions.message.Message;
 import com.home.bakery.mappers.ProductMapper;
+import com.home.bakery.services.elastic.ElasticSearchService;
 import com.home.bakery.services.product.ProductService;
 import com.home.bakery.utils.PageableUtil;
 
@@ -31,6 +32,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductMapper productMapper;
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private ElasticSearchService elasticSearchService;
     @Autowired
     private PageableUtil pageableUtil;
     @Autowired
@@ -55,7 +58,9 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         product.setStatus(ProductStatus.AVAILABLE);
         productRepository.save(product);
-        return productMapper.mapProductToProductResponse(product);
+        ProductResponse productResponse = productMapper.mapProductToProductResponse(product);
+        elasticSearchService.updateProductData(productResponse);
+        return productResponse;
     }
 
     @Override

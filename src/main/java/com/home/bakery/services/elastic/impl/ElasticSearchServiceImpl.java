@@ -31,6 +31,8 @@ import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest.Builder;
+import co.elastic.clients.elasticsearch.core.GetRequest;
+import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.UpdateRequest;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
@@ -107,6 +109,18 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         ElasticsearchClient client = new ElasticsearchClient(transport);
         return client;
     }
+    
+    private boolean documentExists(String index, String id) {
+        ElasticsearchClient client = setUpClient();
+        GetRequest getRequest = GetRequest.of(r -> r.id(id).index(index));
+        try {
+            GetResponse response = client.get(getRequest, getClass());
+            return response.found();
+        } catch (IOException e) {
+            log.error("Error checking if document exists: " + e.getMessage());
+            return false;
+        }
+    }
 
     @Override
     public void bulkProductsData() throws ElasticsearchException, IOException {
@@ -120,10 +134,16 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     @Override
-    public void bulkProductData(ProductResponse productResponse) throws ElasticsearchException, IOException {
+    public void bulkProductData(ProductResponse productResponse){
         BulkRequest.Builder br = new BulkRequest.Builder();
         buildBulkRequest(br, ElasticIndex.PRODUCT_INDEX.toString().toLowerCase(), productResponse, br);
-        bulkDataToElastic(br.build());
+        try {
+            bulkDataToElastic(br.build());
+        } catch (ElasticsearchException e) {
+            log.error("Elastic search exception error when bulk data " + e.getMessage());
+        } catch (IOException e) {
+            log.error("IOException error when bulk data " + e.getMessage());
+        }
     }
 
     @Override
@@ -133,10 +153,20 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     @Override
-    public void updateProductData(ProductResponse productResponse) throws ElasticsearchException, IOException {
-        UpdateRequest updateRequest = buildBulkUpdateRequest(ElasticIndex.PRODUCT_INDEX.toString().toLowerCase(),
-                productResponse, productResponse);
-        updateElasticData(updateRequest);
+    public void updateProductData(ProductResponse productResponse){
+        boolean isExist = documentExists("product_index", String.valueOf(productResponse.getId()));
+        UpdateRequest updateRequest = null;
+        if(isExist){
+            updateRequest = buildBulkUpdateRequest("product_index",
+                productResponse.getId(), productResponse);
+        }
+        try {
+            updateElasticData(updateRequest);
+        } catch (ElasticsearchException e) {
+            log.error("Elastic search exception error when bulk data " + e.getMessage());
+        } catch (IOException e) {
+            log.error("IOException error when bulk data " + e.getMessage());
+        }
     }
 
     @Override
