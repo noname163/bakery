@@ -95,4 +95,10 @@ public class BillServiceImpl implements BillService {
                 .build();
     }
 
+    @Override
+    public List<BillResponse> getListBillResponseByAddress(String adress) {
+        List<Bill> bills = billRepository.getBillByAddressAndCurrentDate(adress);
+        return billMapper.mapBillsToBillResponses(bills);
+    }
+
 }
