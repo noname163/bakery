@@ -59,7 +59,12 @@ public class ProductServiceImpl implements ProductService {
         product.setStatus(ProductStatus.AVAILABLE);
         productRepository.save(product);
         ProductResponse productResponse = productMapper.mapProductToProductResponse(product);
-        elasticSearchService.updateProductData(productResponse);
+        if(productRequest.getId() != null){
+            elasticSearchService.updateProductData(productResponse);
+        }
+        else if(productRequest.getId() == null){
+            elasticSearchService.bulkProductData(productResponse);
+        }
         return productResponse;
     }
 

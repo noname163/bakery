@@ -8,7 +8,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +24,6 @@ import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.Refresh;
 import co.elastic.clients.elasticsearch._types.Result;
 import co.elastic.clients.elasticsearch._types.query_dsl.MatchAllQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
@@ -136,7 +134,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     @Override
     public void bulkProductData(ProductResponse productResponse){
         BulkRequest.Builder br = new BulkRequest.Builder();
-        buildBulkRequest(br, ElasticIndex.PRODUCT_INDEX.toString().toLowerCase(), productResponse, br);
+        buildBulkRequest(br, ElasticIndex.PRODUCT_INDEX.toString().toLowerCase(), productResponse.getId(), productResponse);
         try {
             bulkDataToElastic(br.build());
         } catch (ElasticsearchException e) {
