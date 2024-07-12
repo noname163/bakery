@@ -40,7 +40,6 @@ public class BillDetailServiceImpl implements BillDetailService {
 
         Map<Long, Product> products = productRepository.findByIdIn(productIds).stream()
                 .collect(Collectors.toMap(Product::getId, product -> product));
-        ;
 
         List<BillDetail> billDetails = new ArrayList<>();
 
