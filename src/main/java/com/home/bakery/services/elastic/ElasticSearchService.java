@@ -10,13 +10,11 @@ import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 public interface ElasticSearchService {
     public void bulkProductsData() throws ElasticsearchException, IOException;
 
-    public void bulkProductData(ProductResponse productResponse);
-
     public void bulkCategoryData() throws ElasticsearchException, IOException;
 
-    public void updateProductData(ProductResponse productResponse);
-
     public void clearAllDataByIndex(String index) throws ElasticsearchException, IOException;
+
+    public void sendDataProductToElastic(ProductResponse productResponse);
 
     public void updateCategoryData(CategoryResponse categoryResponse) throws ElasticsearchException, IOException;
 }

@@ -2,7 +2,6 @@ package com.home.bakery.services.product.impl;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,25 +18,27 @@ import com.home.bakery.data.repositories.ProductRepository;
 import com.home.bakery.exceptions.NotFoundException;
 import com.home.bakery.exceptions.message.Message;
 import com.home.bakery.mappers.ProductMapper;
-import com.home.bakery.services.elastic.ElasticSearchService;
 import com.home.bakery.services.product.ProductService;
 import com.home.bakery.utils.PageableUtil;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
     private ProductMapper productMapper;
-    @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired
-    private ElasticSearchService elasticSearchService;
-    @Autowired
     private PageableUtil pageableUtil;
-    @Autowired
     private Message message;
+
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
+            CategoryRepository categoryRepository,
+            PageableUtil pageableUtil, Message message) {
+        this.productRepository = productRepository;
+        this.productMapper = productMapper;
+        this.categoryRepository = categoryRepository;
+        this.pageableUtil = pageableUtil;
+        this.message = message;
+    }
 
     @Override
     public ProductResponse createUpdateProduct(ProductRequest productRequest) {
@@ -58,14 +59,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         product.setStatus(ProductStatus.AVAILABLE);
         productRepository.save(product);
-        ProductResponse productResponse = productMapper.mapProductToProductResponse(product);
-        if(productRequest.getId() != null){
-            elasticSearchService.updateProductData(productResponse);
-        }
-        else if(productRequest.getId() == null){
-            elasticSearchService.bulkProductData(productResponse);
-        }
-        return productResponse;
+        return productMapper.mapProductToProductResponse(product);
     }
 
     @Override

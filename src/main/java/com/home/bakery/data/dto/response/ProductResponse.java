@@ -14,7 +14,7 @@ import lombok.Setter;
 @Builder
 @Document(indexName = "product_index")
 public class ProductResponse {
-    private long id;
+    private Long id;
     private String name;
     private String image;
     private Integer expiredDate;

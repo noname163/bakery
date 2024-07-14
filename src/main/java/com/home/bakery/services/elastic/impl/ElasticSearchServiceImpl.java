@@ -9,6 +9,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.elasticsearch.client.RestClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.home.bakery.data.constans.ElasticIndex;
@@ -29,6 +30,7 @@ import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest;
 import co.elastic.clients.elasticsearch.core.DeleteByQueryRequest.Builder;
+import co.elastic.clients.elasticsearch.core.ExistsRequest;
 import co.elastic.clients.elasticsearch.core.GetRequest;
 import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.UpdateRequest;
@@ -37,6 +39,7 @@ import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.json.JsonpMapper;
 import co.elastic.clients.json.jsonb.JsonbJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
+import co.elastic.clients.transport.endpoints.BooleanResponse;
 import co.elastic.clients.transport.rest_client.RestClientTransport;
 import lombok.extern.log4j.Log4j2;
 
@@ -47,6 +50,14 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     private ProductRepository productRepository;
     @Autowired
     private ProductMapper productMapper;
+    @Value("${elasticsearch.username}")
+    private String elasticUserName;
+    @Value("${elasticsearch.password}")
+    private String elasticPassword;
+    @Value("${elastic.host}")
+    private String elasticHost;
+    @Value("${elastic.port}")
+    private Integer elasticPort;
 
     private void buildBulkRequest(BulkRequest.Builder bulkRequestBuilder, String index, Object id,
             Object document) {
@@ -96,8 +107,8 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
 
     private ElasticsearchClient setUpClient() {
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials("dat", "admin12345"));
-        RestClient restClient = RestClient.builder(new HttpHost("localhost", 9200))
+        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(elasticUserName, elasticPassword));
+        RestClient restClient = RestClient.builder(new HttpHost(elasticHost, elasticPort))
                 .setHttpClientConfigCallback(
                         httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider))
                 .build();
@@ -107,7 +118,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         ElasticsearchClient client = new ElasticsearchClient(transport);
         return client;
     }
-    
+
     private boolean documentExists(String index, String id) {
         ElasticsearchClient client = setUpClient();
         GetRequest getRequest = GetRequest.of(r -> r.id(id).index(index));
@@ -126,15 +137,15 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         List<ProductResponse> productResponses = productMapper.mapProductsToProductResponses(products);
         BulkRequest.Builder br = new BulkRequest.Builder();
         for (ProductResponse product : productResponses) {
-            buildBulkRequest(br, ElasticIndex.PRODUCT_INDEX.toString().toLowerCase(), product.getId(), product);
+            buildBulkRequest(br, ElasticIndex.PRODUCT_INDEX, product.getId(), product);
         }
         bulkDataToElastic(br.build());
     }
 
-    @Override
-    public void bulkProductData(ProductResponse productResponse){
+    private void bulkProductData(ProductResponse productResponse) {
         BulkRequest.Builder br = new BulkRequest.Builder();
-        buildBulkRequest(br, ElasticIndex.PRODUCT_INDEX.toString().toLowerCase(), productResponse.getId(), productResponse);
+        buildBulkRequest(br, ElasticIndex.PRODUCT_INDEX, productResponse.getId(),
+                productResponse);
         try {
             bulkDataToElastic(br.build());
         } catch (ElasticsearchException e) {
@@ -150,13 +161,12 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         throw new UnsupportedOperationException("Unimplemented method 'bulkCategoryData'");
     }
 
-    @Override
-    public void updateProductData(ProductResponse productResponse){
-        boolean isExist = documentExists("product_index", String.valueOf(productResponse.getId()));
+    private void updateProductData(ProductResponse productResponse) {
+        boolean isExist = documentExists(ElasticIndex.PRODUCT_INDEX, String.valueOf(productResponse.getId()));
         UpdateRequest updateRequest = null;
-        if(isExist){
-            updateRequest = buildBulkUpdateRequest("product_index",
-                productResponse.getId(), productResponse);
+        if (isExist) {
+            updateRequest = buildBulkUpdateRequest(ElasticIndex.PRODUCT_INDEX,
+                    productResponse.getId(), productResponse);
         }
         try {
             updateElasticData(updateRequest);
@@ -171,8 +181,9 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     public void clearAllDataByIndex(String index) throws ElasticsearchException, IOException {
         ElasticsearchClient client = setUpClient();
         DeleteByQueryRequest.Builder deleteRequestBuilder = new Builder();
-        Query query = MatchAllQuery.of(m->m)._toQuery();
-        DeleteByQueryRequest deleteByQueryRequest = deleteRequestBuilder.index(List.of(index)).ignoreUnavailable(true).query(query).build();
+        Query query = MatchAllQuery.of(m -> m)._toQuery();
+        DeleteByQueryRequest deleteByQueryRequest = deleteRequestBuilder.index(List.of(index)).ignoreUnavailable(true)
+                .query(query).build();
         client.deleteByQuery(deleteByQueryRequest);
     }
 
@@ -182,5 +193,27 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
         throw new UnsupportedOperationException("Unimplemented method 'updateCategoryData'");
     }
 
+    @Override
+    public void sendDataProductToElastic(ProductResponse productResponse) {
+        boolean isExisted = isExistId(ElasticIndex.PRODUCT_INDEX, productResponse.getId().toString());
+        if (isExisted) {
+            updateProductData(productResponse);
+        } else {
+            bulkProductData(productResponse);
+        }
+    }
 
+    private boolean isExistId(String index, String id) {
+        ElasticsearchClient client = setUpClient();
+        ExistsRequest existsRequest = ExistsRequest.of(e -> e.index(index).id(id));
+        BooleanResponse isExisted;
+        try {
+            isExisted = client.exists(existsRequest);
+            return isExisted.value();
+        } catch (ElasticsearchException | IOException e1) {
+            log.error("Error while checking id = " + id + " exist on elastic of index " + index);
+            log.error(e1.getMessage());
+            return false;
+        }
+    }
 }

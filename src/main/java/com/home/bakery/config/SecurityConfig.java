@@ -19,10 +19,7 @@ import org.springframework.web.context.WebApplicationContext;
 import com.home.bakery.filters.AuthenticationFilter;
 import com.home.bakery.filters.ExceptionHandlerFilter;
 
-import lombok.extern.slf4j.Slf4j;
 
-
-@Slf4j
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
