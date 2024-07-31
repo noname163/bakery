@@ -37,6 +37,7 @@ import co.elastic.clients.elasticsearch.core.UpdateRequest;
 import co.elastic.clients.elasticsearch.core.UpdateResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.json.JsonpMapper;
+import co.elastic.clients.json.jackson.JacksonJsonpMapper;
 import co.elastic.clients.json.jsonb.JsonbJsonpMapper;
 import co.elastic.clients.transport.ElasticsearchTransport;
 import co.elastic.clients.transport.endpoints.BooleanResponse;
@@ -106,16 +107,23 @@ public class ElasticSearchServiceImpl implements ElasticSearchService {
     }
 
     private ElasticsearchClient setUpClient() {
+        // Set up credentials provider
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(elasticUserName, elasticPassword));
+        credentialsProvider.setCredentials(AuthScope.ANY,
+                new UsernamePasswordCredentials(elasticUserName, elasticPassword));
+
+        // Create the low-level REST client
         RestClient restClient = RestClient.builder(new HttpHost(elasticHost, elasticPort))
                 .setHttpClientConfigCallback(
                         httpClientBuilder -> httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider))
                 .build();
-        JsonpMapper jsonMapper = new JsonbJsonpMapper();
-        ElasticsearchTransport transport = new RestClientTransport(restClient, jsonMapper);
 
+        // Create the transport with a Jackson mapper
+        ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
+
+        // Create the API client
         ElasticsearchClient client = new ElasticsearchClient(transport);
+
         return client;
     }
 

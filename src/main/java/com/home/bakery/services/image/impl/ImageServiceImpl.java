@@ -37,24 +37,49 @@ public class ImageServiceImpl implements ImageService {
             Long objectId = (Long) objectMethodGetId.invoke(object);
             Method objectMethodGetName = object.getClass().getMethod("getName");
             String objectName = (String) objectMethodGetName.invoke(object);
-            String fileName = objectName + "_" + objectId;
+
+            String baseFileName = objectName + "_" + objectId;
             Map<String, String> metadata = new HashMap<>();
             metadata.put("Content-Type", "image/jpeg");
             metadata.put("Content-Disposition", "inline");
-            metadata.put("x-amz-meta-title", "My File Title "+ objectName + " " + imageTypes);
-            metadata.put(Commons.IMAGE_NAME, fileName);
+            metadata.put("x-amz-meta-title", "My File Title " + objectName + " " + imageTypes);
+            metadata.put(Commons.IMAGE_NAME, baseFileName);
+
             List<Images> images = new ArrayList<>();
-            awsService.uploadFiles(multipartFiles, Optional.of(metadata));
-            for (int i = 0; i < multipartFiles.size(); i++) {
-                Images image = Images.builder().imageTypes(imageTypes).objectId(objectId).name(fileName).build();
-                images.add(image);
+            List<MultipartFile> imageFiles = new ArrayList<>();
+
+            for (MultipartFile multipartFile : multipartFiles) {
+                if (isImageFile(multipartFile)) {
+                    imageFiles.add(multipartFile);
+                } else {
+                    log.warn("File is not an image: " + multipartFile.getOriginalFilename());
+                }
             }
-            imageRepository.saveAll(images);
+
+            if (!imageFiles.isEmpty()) {
+                awsService.uploadFiles(imageFiles, Optional.of(metadata));
+                for (int i = 0; i < imageFiles.size(); i++) {
+                    Images image = Images.builder().imageTypes(imageTypes).objectId(objectId)
+                            .name(baseFileName + "_" + i).build();
+                    images.add(image);
+                }
+                imageRepository.saveAll(images);
+            } else {
+                log.warn("No valid image files to upload.");
+            }
+
         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException
                 | InvocationTargetException e) {
-            log.error("Error occurred when save images: " + object.getClass().getName(), e);
+            log.error("Error occurred when saving images for object: " + object.getClass().getName(), e);
         }
-
     }
 
+    private boolean isImageFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        return contentType != null && (contentType.equalsIgnoreCase("image/jpeg") ||
+                contentType.equalsIgnoreCase("image/png") ||
+                contentType.equalsIgnoreCase("image/gif") ||
+                contentType.equalsIgnoreCase("image/bmp") ||
+                contentType.equalsIgnoreCase("image/webp"));
+    }
 }
