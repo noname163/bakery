@@ -4,9 +4,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -81,5 +83,16 @@ public class ImageServiceImpl implements ImageService {
                 contentType.equalsIgnoreCase("image/gif") ||
                 contentType.equalsIgnoreCase("image/bmp") ||
                 contentType.equalsIgnoreCase("image/webp"));
+    }
+
+    @Override
+    public Set<String> getListImageNameByProductId(Long productId) {
+        Optional<Set<Images>> imagesOptional = imageRepository.findImageNameByObjectIdAndImageTypes(productId,
+                ImageTypes.PRODUCT);
+        Set<String> imageNames = new HashSet<>();
+        imagesOptional.ifPresent(images -> {
+            images.forEach(image -> imageNames.add(image.getName()));
+        });
+        return imageNames;
     }
 }

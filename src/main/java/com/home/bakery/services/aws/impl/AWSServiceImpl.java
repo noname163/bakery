@@ -1,15 +1,20 @@
 package com.home.bakery.services.aws.impl;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.home.bakery.config.AWSConfig;
@@ -57,5 +62,25 @@ public class AWSServiceImpl implements AWSService {
             String uniqueFileName = baseFileName + "_" + i;
             uploadFile(multipartFile, optionalMetaData, uniqueFileName);
         }
+    }
+
+    @Override
+    public String getFileUrl(String fileName) {
+        Date expiration = new Date();
+        long expTimeMillis = expiration.getTime();
+        expTimeMillis += 1000 * 60 * 60;
+        expiration.setTime(expTimeMillis);
+
+        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, fileName)
+                .withMethod(com.amazonaws.HttpMethod.GET)
+                .withExpiration(expiration);
+        AmazonS3 amazonS3Client = awsConfig.setUpClient();
+        URL url = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
+        return url.toString();
+    }
+
+    @Override
+    public Set<String> getFileUrls(Set<String> fileNames) {
+        return fileNames.stream().map(this::getFileUrl).collect(Collectors.toSet());
     }
 }

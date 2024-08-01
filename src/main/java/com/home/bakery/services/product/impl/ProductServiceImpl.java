@@ -1,8 +1,7 @@
 package com.home.bakery.services.product.impl;
 
 import java.util.List;
-
-import javax.transaction.Transactional;
+import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +19,8 @@ import com.home.bakery.data.repositories.ProductRepository;
 import com.home.bakery.exceptions.NotFoundException;
 import com.home.bakery.exceptions.message.Message;
 import com.home.bakery.mappers.ProductMapper;
+import com.home.bakery.services.aws.AWSService;
+import com.home.bakery.services.image.ImageService;
 import com.home.bakery.services.product.ProductService;
 import com.home.bakery.utils.PageableUtil;
 
@@ -31,15 +32,19 @@ public class ProductServiceImpl implements ProductService {
     private CategoryRepository categoryRepository;
     private PageableUtil pageableUtil;
     private Message message;
+    private ImageService imageService;
+    private AWSService awsService;
 
     public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
             CategoryRepository categoryRepository,
-            PageableUtil pageableUtil, Message message) {
+            PageableUtil pageableUtil, Message message, ImageService imageService, AWSService awsService) {
         this.productRepository = productRepository;
         this.productMapper = productMapper;
         this.categoryRepository = categoryRepository;
         this.pageableUtil = pageableUtil;
         this.message = message;
+        this.imageService = imageService;
+        this.awsService = awsService;
     }
 
     @Override
@@ -78,13 +83,23 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = pageableUtil.getPageable(page, size, field, sortType);
 
         Page<Product> data = productRepository.findAll(pageable);
-
+        List<ProductResponse> productResponses = productMapper.mapProductsToProductResponses(data.getContent());
+        for (ProductResponse productResponse : productResponses) {
+            setImageForProductResponse(productResponse);
+        }
         return PaginationResponse.<List<ProductResponse>>builder()
-                .data(productMapper.mapProductsToProductResponses(data.getContent()))
+                .data(productResponses)
                 .totalPage(data.getTotalPages())
                 .totalRow(data.getTotalElements())
                 .build();
 
+    }
+
+    @Override
+    public ProductResponse setImageForProductResponse(ProductResponse productResponse) {
+        Set<String> imageNames = imageService.getListImageNameByProductId(productResponse.getId());
+        productResponse.setImages(awsService.getFileUrls(imageNames));
+        return productResponse;
     }
 
 }

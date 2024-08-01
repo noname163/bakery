@@ -52,11 +52,11 @@ public class ProductController {
     })
     @PostMapping
     @Transactional
-    public ResponseEntity<ProductResponse> createProduct(@RequestPart ProductRequest product, @RequestPart MultipartFile multipartFiles) {
+    public ResponseEntity<ProductResponse> createProduct(@RequestPart ProductRequest product, @RequestPart List<MultipartFile> multipartFiles) {
         ProductResponse productResponse = productService.createUpdateProduct(product);
-        imageService.saveImages(productResponse, ImageTypes.PRODUCT, List.of(multipartFiles));
+        imageService.saveImages(productResponse, ImageTypes.PRODUCT, multipartFiles);
         elasticSearchService.sendDataProductToElastic(productResponse);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productService.setImageForProductResponse(productResponse));
     }
 
     @Operation(summary = "Get produt")

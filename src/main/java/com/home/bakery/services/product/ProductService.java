@@ -13,6 +13,8 @@ public interface ProductService {
 
     public void changeProductStatus(long id, ProductStatus status);
 
+    public ProductResponse setImageForProductResponse(ProductResponse productResponse);
+
     public PaginationResponse<List<ProductResponse>> getProducts(Integer page,
             Integer size, String field, SortType sortType);
 }
