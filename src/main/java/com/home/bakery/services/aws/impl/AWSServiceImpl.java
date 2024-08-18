@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -29,6 +31,10 @@ public class AWSServiceImpl implements AWSService {
 
     @Value("${s3.bucket.name}")
     private String bucketName;
+
+    @Value("${s3.download.url}")
+    private String downloadURL;
+
     private AWSConfig awsConfig;
 
     public AWSServiceImpl(AWSConfig awsConfig) {
@@ -42,9 +48,11 @@ public class AWSServiceImpl implements AWSService {
         optionalMetaData.ifPresent(metaData -> metaData.forEach(objectMetadata::addUserMetadata));
         objectMetadata.setContentLength(multipartFile.getSize());
         try {
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName,
-                    multipartFile.getInputStream(), objectMetadata);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName,
+                    fileName + multipartFile.getContentType().replace("image/", "."),
+                    multipartFile.getInputStream(), objectMetadata).withCannedAcl(CannedAccessControlList.PublicRead);
             AmazonS3 amazonS3 = awsConfig.setUpClient();
+            deleteFile(fileName);
             amazonS3.putObject(putObjectRequest);
             log.info("Successfully uploaded file: " + fileName);
         } catch (IOException e) {
@@ -66,21 +74,39 @@ public class AWSServiceImpl implements AWSService {
 
     @Override
     public String getFileUrl(String fileName) {
-        Date expiration = new Date();
-        long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60 * 60;
-        expiration.setTime(expTimeMillis);
+        // Date expiration = new Date();
+        // long expTimeMillis = expiration.getTime();
+        // expTimeMillis += 1000 * 60 * 60;
+        // expiration.setTime(expTimeMillis);
 
-        GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, fileName)
-                .withMethod(com.amazonaws.HttpMethod.GET)
-                .withExpiration(expiration);
-        AmazonS3 amazonS3Client = awsConfig.setUpClient();
-        URL url = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
-        return url.toString();
+        // GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, fileName)
+        //         .withMethod(com.amazonaws.HttpMethod.GET)
+        //         .withExpiration(expiration);
+        // AmazonS3 amazonS3Client = awsConfig.setUpClient();
+        // URL url = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
+        // return url.toString();
+        return downloadURL+fileName;
     }
 
     @Override
     public Set<String> getFileUrls(Set<String> fileNames) {
         return fileNames.stream().map(this::getFileUrl).collect(Collectors.toSet());
+    }
+
+    @Override
+    public void deleteFile(String fileName) {
+        try {
+            AmazonS3 amazonS3 = awsConfig.setUpClient();
+            DeleteObjectRequest deleteObjectRequest = new DeleteObjectRequest(bucketName, fileName);
+            if (amazonS3.doesObjectExist(bucketName, fileName)) {
+                amazonS3.deleteObject(deleteObjectRequest);
+                log.info("Delete file name " + fileName + " success");
+            } else {
+                log.warn("Cannot find image with name " + fileName);
+            }
+        } catch (Exception e) {
+            log.error("Error while remove file name " + fileName);
+            log.error(e.getMessage());
+        }
     }
 }

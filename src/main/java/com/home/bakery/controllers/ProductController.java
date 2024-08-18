@@ -55,8 +55,9 @@ public class ProductController {
     public ResponseEntity<ProductResponse> createProduct(@RequestPart ProductRequest product, @RequestPart List<MultipartFile> multipartFiles) {
         ProductResponse productResponse = productService.createUpdateProduct(product);
         imageService.saveImages(productResponse, ImageTypes.PRODUCT, multipartFiles);
+        productResponse = productService.setImageForProductResponse(productResponse);
         elasticSearchService.sendDataProductToElastic(productResponse);
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.setImageForProductResponse(productResponse));
+        return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
     }
 
     @Operation(summary = "Get produt")

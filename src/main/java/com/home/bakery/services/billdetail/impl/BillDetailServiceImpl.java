@@ -41,9 +41,9 @@ public class BillDetailServiceImpl implements BillDetailService {
 
         List<BillDetail> billDetails = new ArrayList<>();
 
-        for (Bill bill : billDetailRequests.keySet()) {
+        for (Map.Entry<Bill,List<BillDetailRequest>> entry : billDetailRequests.entrySet()) {
             billDetails.addAll(
-                    billDetailMapper.mapBillDetailRequestsToBillDetails(billDetailRequests.get(bill), bill));
+                    billDetailMapper.mapBillDetailRequestsToBillDetails(entry.getValue(), entry.getKey()));
         }
         for (BillDetail billDetail : billDetails) {
             Product product = products.get(billDetail.getProductId());

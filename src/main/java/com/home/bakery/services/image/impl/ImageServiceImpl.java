@@ -62,7 +62,7 @@ public class ImageServiceImpl implements ImageService {
                 awsService.uploadFiles(imageFiles, Optional.of(metadata));
                 for (int i = 0; i < imageFiles.size(); i++) {
                     Images image = Images.builder().imageTypes(imageTypes).objectId(objectId)
-                            .name(baseFileName + "_" + i).build();
+                            .name(baseFileName + "_" + i+imageFiles.get(i).getContentType().replace("image/", ".")).build();
                     images.add(image);
                 }
                 imageRepository.saveAll(images);
@@ -94,5 +94,10 @@ public class ImageServiceImpl implements ImageService {
             images.forEach(image -> imageNames.add(image.getName()));
         });
         return imageNames;
+    }
+
+    @Override
+    public Set<String> getListURLImageByProductId(Long productId) {
+        return awsService.getFileUrls(getListImageNameByProductId(productId));
     }
 }

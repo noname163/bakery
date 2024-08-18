@@ -11,5 +11,6 @@ public interface AWSService {
     public void uploadFile(MultipartFile multipartFile, Optional<Map<String, String>> optionalMetaData, String fileName);
     public void uploadFiles(List<MultipartFile> multipartFiles, Optional<Map<String, String>> optionalMetaDatas);
     public String getFileUrl(String fileName);
+    public void deleteFile(String fileName);
     public Set<String> getFileUrls(Set<String> fileNames);
 }
