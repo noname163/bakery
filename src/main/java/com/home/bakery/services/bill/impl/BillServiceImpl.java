@@ -25,7 +25,6 @@ import com.home.bakery.data.entities.UserDetail;
 import com.home.bakery.data.repositories.BillRepository;
 import com.home.bakery.data.repositories.UserDetailRepository;
 import com.home.bakery.mappers.BillMapper;
-import com.home.bakery.mappers.MapperTemplate;
 import com.home.bakery.services.bill.BillService;
 import com.home.bakery.services.billdetail.BillDetailService;
 import com.home.bakery.utils.PageableUtil;
@@ -93,6 +92,12 @@ public class BillServiceImpl implements BillService {
                 .totalPage(data.getTotalPages())
                 .totalRow(data.getTotalElements())
                 .build();
+    }
+
+    @Override
+    public List<BillResponse> getListBillResponseByAddress(String adress) {
+        List<Bill> bills = billRepository.findByUserDetailAddress(adress);
+        return billMapper.mapBillsToBillResponses(bills);
     }
 
 }

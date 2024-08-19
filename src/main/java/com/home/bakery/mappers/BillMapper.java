@@ -49,4 +49,8 @@ public class BillMapper extends MapperTemplate<Bill, BillRequest, BillResponse, 
                 .build();
     }
 
+    public List<BillResponse> mapBillsToBillResponses(List<Bill> bills) {
+        return bills.stream().map(this::mapEntityToResponse).collect(Collectors.toList());
+    }
+
 }

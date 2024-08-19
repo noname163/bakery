@@ -2,6 +2,8 @@ package com.home.bakery.controllers;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,14 +12,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.home.bakery.data.constans.ImageTypes;
 import com.home.bakery.data.constans.SortType;
 import com.home.bakery.data.dto.request.ProductRequest;
 import com.home.bakery.data.dto.request.UserRequest;
 import com.home.bakery.data.dto.response.PaginationResponse;
 import com.home.bakery.data.dto.response.ProductResponse;
 import com.home.bakery.exceptions.BadRequestException;
+import com.home.bakery.services.elastic.ElasticSearchService;
+import com.home.bakery.services.image.ImageService;
 import com.home.bakery.services.product.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,6 +38,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 public class ProductController {
     @Autowired
     private ProductService productService;
+    @Autowired
+    private ImageService imageService;
+    @Autowired
+    private ElasticSearchService elasticSearchService;
 
     @Operation(summary = "Create new product")
     @ApiResponses(value = {
@@ -40,8 +51,13 @@ public class ProductController {
                     @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class)) })
     })
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest product) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productService.createUpdateProduct(product));
+    @Transactional
+    public ResponseEntity<ProductResponse> createProduct(@RequestPart ProductRequest product, @RequestPart List<MultipartFile> multipartFiles) {
+        ProductResponse productResponse = productService.createUpdateProduct(product);
+        imageService.saveImages(productResponse, ImageTypes.PRODUCT, multipartFiles);
+        productResponse = productService.setImageForProductResponse(productResponse);
+        elasticSearchService.sendDataProductToElastic(productResponse);
+        return ResponseEntity.status(HttpStatus.CREATED).body(productResponse);
     }
 
     @Operation(summary = "Get produt")

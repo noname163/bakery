@@ -1,7 +1,6 @@
 package com.home.bakery.services.billdetail.impl;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.home.bakery.data.dto.request.BillDetailRequest;
-import com.home.bakery.data.dto.response.BillDetailResponse;
 import com.home.bakery.data.entities.Bill;
 import com.home.bakery.data.entities.BillDetail;
 import com.home.bakery.data.entities.Product;
@@ -40,13 +38,12 @@ public class BillDetailServiceImpl implements BillDetailService {
 
         Map<Long, Product> products = productRepository.findByIdIn(productIds).stream()
                 .collect(Collectors.toMap(Product::getId, product -> product));
-        ;
 
         List<BillDetail> billDetails = new ArrayList<>();
 
-        for (Bill bill : billDetailRequests.keySet()) {
+        for (Map.Entry<Bill,List<BillDetailRequest>> entry : billDetailRequests.entrySet()) {
             billDetails.addAll(
-                    billDetailMapper.mapBillDetailRequestsToBillDetails(billDetailRequests.get(bill), bill));
+                    billDetailMapper.mapBillDetailRequestsToBillDetails(entry.getValue(), entry.getKey()));
         }
         for (BillDetail billDetail : billDetails) {
             Product product = products.get(billDetail.getProductId());

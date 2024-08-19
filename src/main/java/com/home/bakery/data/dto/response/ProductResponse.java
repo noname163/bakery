@@ -1,8 +1,9 @@
 package com.home.bakery.data.dto.response;
 
+import java.util.Set;
+
 import org.springframework.data.elasticsearch.annotations.Document;
 
-import com.home.bakery.data.constans.ElasticIndex;
 import com.home.bakery.data.constans.ProductStatus;
 
 import lombok.Builder;
@@ -14,9 +15,9 @@ import lombok.Setter;
 @Builder
 @Document(indexName = "product_index")
 public class ProductResponse {
-    private long id;
+    private Long id;
     private String name;
-    private String image;
+    private Set<String> images;
     private Integer expiredDate;
     private ProductStatus status;
     private String category;

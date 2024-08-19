@@ -1,6 +1,5 @@
 package com.home.bakery.services.userDetail.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.home.bakery.data.dto.request.UserDetailRequest;
@@ -17,7 +16,6 @@ import com.home.bakery.services.userDetail.UserDetailService;
 @Service
 public class UserDetailServiceImpl implements UserDetailService {
 
-    @Autowired
     public UserDetailServiceImpl(UserDetailMapper userDetailMapper, UserDetailRepository userDetailRepository,
             UserRepository userRepository, AddressRepository addressRepository, Message message) {
         this.userDetailMapper = userDetailMapper;

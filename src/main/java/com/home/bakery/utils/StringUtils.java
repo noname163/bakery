@@ -1,6 +1,5 @@
 package com.home.bakery.utils;
 
-import org.apache.tomcat.util.http.parser.MediaType;
 import org.springframework.stereotype.Component;
 
 @Component

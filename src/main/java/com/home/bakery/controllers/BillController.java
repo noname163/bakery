@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.home.bakery.data.constans.BillStatus;
 import com.home.bakery.data.constans.SortType;
 import com.home.bakery.data.dto.request.BillRequest;
-import com.home.bakery.data.dto.request.UserRequest;
 import com.home.bakery.data.dto.response.BillResponse;
 import com.home.bakery.data.dto.response.PaginationResponse;
-import com.home.bakery.data.dto.response.ProductResponse;
 import com.home.bakery.exceptions.BadRequestException;
 import com.home.bakery.services.bill.BillService;
 

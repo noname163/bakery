@@ -12,4 +12,6 @@ public interface BillService {
     public List<BillResponse> createBills(List<BillRequest> billRequests);
 
     public PaginationResponse<List<BillResponse>> getListBills(String searchTerm, int page, int size, String sortField,SortType sortType, BillStatus status);
+
+    public List<BillResponse> getListBillResponseByAddress(String adress);
 }

@@ -1,8 +1,8 @@
 package com.home.bakery.services.product.impl;
 
 import java.util.List;
+import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,25 +19,33 @@ import com.home.bakery.data.repositories.ProductRepository;
 import com.home.bakery.exceptions.NotFoundException;
 import com.home.bakery.exceptions.message.Message;
 import com.home.bakery.mappers.ProductMapper;
-import com.home.bakery.services.elastic.ElasticSearchService;
+import com.home.bakery.services.aws.AWSService;
+import com.home.bakery.services.image.ImageService;
 import com.home.bakery.services.product.ProductService;
 import com.home.bakery.utils.PageableUtil;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
-    @Autowired
     private ProductRepository productRepository;
-    @Autowired
     private ProductMapper productMapper;
-    @Autowired
     private CategoryRepository categoryRepository;
-    @Autowired
-    private ElasticSearchService elasticSearchService;
-    @Autowired
     private PageableUtil pageableUtil;
-    @Autowired
     private Message message;
+    private ImageService imageService;
+    private AWSService awsService;
+
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper,
+            CategoryRepository categoryRepository,
+            PageableUtil pageableUtil, Message message, ImageService imageService, AWSService awsService) {
+        this.productRepository = productRepository;
+        this.productMapper = productMapper;
+        this.categoryRepository = categoryRepository;
+        this.pageableUtil = pageableUtil;
+        this.message = message;
+        this.imageService = imageService;
+        this.awsService = awsService;
+    }
 
     @Override
     public ProductResponse createUpdateProduct(ProductRequest productRequest) {
@@ -58,9 +66,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         product.setStatus(ProductStatus.AVAILABLE);
         productRepository.save(product);
-        ProductResponse productResponse = productMapper.mapProductToProductResponse(product);
-        elasticSearchService.updateProductData(productResponse);
-        return productResponse;
+        return productMapper.mapProductToProductResponse(product);
     }
 
     @Override
@@ -77,13 +83,23 @@ public class ProductServiceImpl implements ProductService {
         Pageable pageable = pageableUtil.getPageable(page, size, field, sortType);
 
         Page<Product> data = productRepository.findAll(pageable);
-
+        List<ProductResponse> productResponses = productMapper.mapProductsToProductResponses(data.getContent());
+        for (ProductResponse productResponse : productResponses) {
+            setImageForProductResponse(productResponse);
+        }
         return PaginationResponse.<List<ProductResponse>>builder()
-                .data(productMapper.mapProductsToProductResponses(data.getContent()))
+                .data(productResponses)
                 .totalPage(data.getTotalPages())
                 .totalRow(data.getTotalElements())
                 .build();
 
+    }
+
+    @Override
+    public ProductResponse setImageForProductResponse(ProductResponse productResponse) {
+        Set<String> imageNames = imageService.getListImageNameByProductId(productResponse.getId());
+        productResponse.setImages(awsService.getFileUrls(imageNames));
+        return productResponse;
     }
 
 }
