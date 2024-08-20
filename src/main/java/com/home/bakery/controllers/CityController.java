@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.home.bakery.data.dto.request.AddressRequest;
 import com.home.bakery.exceptions.BadRequestException;
 import com.home.bakery.services.address.CityService;
 

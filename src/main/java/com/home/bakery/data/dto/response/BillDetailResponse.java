@@ -8,7 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BillDetailResponse {
+    private long id;
+    private long productId;
     private String productName;
+    private double price;
     private int quantity;
     private int exchangeQuantity;
 }

@@ -4,8 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.home.bakery.data.dto.request.BillDetailRequest;
+import com.home.bakery.data.dto.request.BillDetailUpdateRequest;
+import com.home.bakery.data.dto.response.BillDetailResponse;
 import com.home.bakery.data.entities.Bill;
 
 public interface BillDetailService {
     public void createBillDetails(Map<Bill, List<BillDetailRequest>> billDetailRequests);
+
+    public List<BillDetailResponse> editBillDetails(List<BillDetailUpdateRequest> billDetailUpdateRequests);
 }

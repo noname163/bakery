@@ -38,6 +38,8 @@ public class BillDetail {
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
+    @Column(name="price")
+    private Double price;
     @ManyToOne
     @JoinColumn(name = "bill_id")
     private Bill bill;
@@ -46,7 +48,8 @@ public class BillDetail {
     @Column(name = "updated_date")
     private LocalDate updatedDate;
 
-
     @Transient
     private Long productId;
+    @Transient
+    private Float customerCommission;
 }
