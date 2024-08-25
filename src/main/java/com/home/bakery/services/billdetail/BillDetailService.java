@@ -12,4 +12,6 @@ public interface BillDetailService {
     public void createBillDetails(Map<Bill, List<BillDetailRequest>> billDetailRequests);
 
     public List<BillDetailResponse> editBillDetails(List<BillDetailUpdateRequest> billDetailUpdateRequests);
+
+    public List<BillDetailResponse> getListBillDetailByBillId(Long billId);
 }

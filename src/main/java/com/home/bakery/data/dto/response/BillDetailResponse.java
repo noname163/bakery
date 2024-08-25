@@ -1,5 +1,7 @@
 package com.home.bakery.data.dto.response;
 
+import java.time.LocalDate;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,4 +16,6 @@ public class BillDetailResponse {
     private double price;
     private int quantity;
     private int exchangeQuantity;
+    private LocalDate createdDate;
+    private LocalDate updatedDate;
 }

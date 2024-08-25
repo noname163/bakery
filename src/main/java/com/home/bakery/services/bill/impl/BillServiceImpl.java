@@ -55,7 +55,8 @@ public class BillServiceImpl implements BillService {
 
         userDetails
                 .forEach(user -> billsMap.computeIfAbsent(user.getId(),
-                        id -> Bill.builder().userDetail(user).customerCommission(user.getCommissionRate()).createdDate(LocalDate.now()).status(BillStatus.CREATED)
+                        id -> Bill.builder().userDetail(user).customerCommission(user.getCommissionRate())
+                                .createdDate(LocalDate.now()).status(BillStatus.CREATED)
                                 .build()));
 
         billRequests.forEach(billRequest -> {

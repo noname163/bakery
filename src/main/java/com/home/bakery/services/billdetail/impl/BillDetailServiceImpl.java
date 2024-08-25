@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,11 +48,13 @@ public class BillDetailServiceImpl implements BillDetailService {
 
         for (Map.Entry<Bill, List<BillDetailRequest>> entry : billDetailRequests.entrySet()) {
             billDetails.addAll(
-                    billDetailMapper.mapBillDetailRequestsToBillDetails(entry.getValue(), entry.getKey()));
+                    billDetailMapper.mapBillDetailRequestsToBillDetails(entry.getValue(),
+                            entry.getKey()));
         }
         for (BillDetail billDetail : billDetails) {
             Product product = products.get(billDetail.getProductId());
-            billDetail.setPrice(product.getPrice() - ((product.getPrice() * billDetail.getCustomerCommission()) / 100));
+            billDetail.setPrice(product.getPrice()
+                    - ((product.getPrice() * billDetail.getCustomerCommission()) / 100));
             billDetail.setProduct(product);
         }
 
@@ -82,6 +85,13 @@ public class BillDetailServiceImpl implements BillDetailService {
         }
         billDetailRepository.saveAll(billDetailsUpdate);
         return billDetailResponses;
+    }
+
+    @Override
+    public List<BillDetailResponse> getListBillDetailByBillId(Long billId) {
+        Optional<List<BillDetailResponse>> billDetailOtp = billDetailRepository
+                .findBillDetailByBillIdCustom(billId);
+        return billDetailOtp.get();
     }
 
 }

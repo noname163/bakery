@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-@RestController
+@RestController 
 @RequestMapping("/api/bill-details")
 public class BillDetailController {
 
