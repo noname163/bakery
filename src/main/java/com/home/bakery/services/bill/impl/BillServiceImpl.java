@@ -97,8 +97,7 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public List<BillResponse> getListBillResponseByAddress(String adress) {
-        List<Bill> bills = billRepository.findByUserDetailAddress(adress);
-        return billMapper.mapBillsToBillResponses(bills);
+        return billRepository.getBillByAddress(adress);
     }
 
 }
