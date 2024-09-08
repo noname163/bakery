@@ -1,6 +1,8 @@
 package com.home.bakery.services.billdetail.impl;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.home.bakery.data.dto.request.BillDetailRequest;
 import com.home.bakery.data.dto.request.BillDetailUpdateRequest;
@@ -34,6 +37,7 @@ public class BillDetailServiceImpl implements BillDetailService {
     private ProductRepository productRepository;
 
     @Override
+    @Transactional
     public void createBillDetails(Map<Bill, List<BillDetailRequest>> billDetailRequests) {
         Set<Long> productIds = billDetailRequests.values()
                 .stream()
@@ -48,7 +52,8 @@ public class BillDetailServiceImpl implements BillDetailService {
 
         for (Map.Entry<Bill, List<BillDetailRequest>> entry : billDetailRequests.entrySet()) {
             billDetails.addAll(
-                    billDetailMapper.mapBillDetailRequestsToBillDetails(entry.getValue(),
+                    billDetailMapper.mapBillDetailRequestsToBillDetails(handleBillDetailProduct(entry
+                            .getValue()),
                             entry.getKey()));
         }
         for (BillDetail billDetail : billDetails) {
@@ -56,6 +61,9 @@ public class BillDetailServiceImpl implements BillDetailService {
             billDetail.setPrice(product.getPrice()
                     - ((product.getPrice() * billDetail.getCustomerCommission()) / 100));
             billDetail.setProduct(product);
+            billDetail.setCreatedDate(LocalDate.now());
+            billDetail.setUpdatedDate(LocalDate.now());
+
         }
 
         billDetailRepository.saveAll(billDetails);
@@ -92,6 +100,25 @@ public class BillDetailServiceImpl implements BillDetailService {
         Optional<List<BillDetailResponse>> billDetailOtp = billDetailRepository
                 .findBillDetailByBillIdCustom(billId);
         return billDetailOtp.get();
+    }
+
+    private List<BillDetailRequest> handleBillDetailProduct(List<BillDetailRequest> billDetailRequests) {
+        HashMap<Long, BillDetailRequest> billDetailHashMap = new HashMap<>();
+        List<BillDetailRequest> result = new ArrayList<>();
+        if (billDetailRequests != null && !billDetailRequests.isEmpty()) {
+            for (BillDetailRequest billDetailRequest : billDetailRequests) {
+                billDetailHashMap.merge(billDetailRequest.getProductId(), billDetailRequest,
+                        (existingRequest, newRequest) -> {
+                            existingRequest.setQuantity(existingRequest.getQuantity() + newRequest.getQuantity());
+                            return existingRequest;
+                        });
+            }
+
+            for (BillDetailRequest billDetailRequest : billDetailHashMap.values()) {
+                result.add(billDetailRequest);
+            }
+        }
+        return result;
     }
 
 }

@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.home.bakery.data.dto.request.BillDetailUpdateRequest;
@@ -22,7 +24,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
-@RestController 
+@RestController
 @RequestMapping("/api/bill-details")
 public class BillDetailController {
 
@@ -39,6 +41,19 @@ public class BillDetailController {
     @PostMapping
     public ResponseEntity<List<BillDetailResponse>> editBillDetail(
             @RequestBody List<BillDetailUpdateRequest> billDetailUpdateRequests) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(billDetailService.editBillDetails(billDetailUpdateRequests));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(billDetailService.editBillDetails(billDetailUpdateRequests));
+    }
+
+    @Operation(summary = "Get list bill detail by bill id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Get bills detail successfully.", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = BillRequest.class)) }),
+            @ApiResponse(responseCode = "400", description = "Data not valid", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = BadRequestException.class)) })
+    })
+    @GetMapping
+    public ResponseEntity<List<BillDetailResponse>> getBillDetail(@RequestParam("billId") Long billId) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(billDetailService.getListBillDetailByBillId(billId));
     }
 }
